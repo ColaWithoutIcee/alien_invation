@@ -7,6 +7,7 @@
 import sys
 import pygame
 from settings import Settings
+from ship import Ship
 
 
 class AlienInvasion:
@@ -18,6 +19,7 @@ class AlienInvasion:
         self.settings = Settings()
         self.screen = pygame.display.set_mode(
             (self.settings.screen_width, self.settings.screen_height))
+        self.ship = Ship(self)
         pygame.display.set_caption("Alien Invasion")
         # 设置背景色
         # self.bg_color = (230, 230, 230)
@@ -31,6 +33,7 @@ class AlienInvasion:
                     sys.exit()
             # 每次循环的时候重新绘制背景色。
             self.screen.fill(self.settings.bg_color)
+            self.ship.blitme()
             # 让最近绘制的屏幕可见
             pygame.display.flip()
 
@@ -39,4 +42,3 @@ if __name__ == '__main__':
     # 创建游戏示例并开始游戏
     ai = AlienInvasion()
     ai.run_game()
-
