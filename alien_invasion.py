@@ -28,14 +28,24 @@ class AlienInvasion:
         """开始游戏的主循环"""
         while True:
             # 监视鼠标和键盘事件
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-            # 每次循环的时候重新绘制背景色。
-            self.screen.fill(self.settings.bg_color)
-            self.ship.blitme()
+            self._check_event()
+            self._update_screen()
             # 让最近绘制的屏幕可见
             pygame.display.flip()
+
+    def _check_event(self):
+        """响应鼠标和键盘事件"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    self.ship.rect.x += 1
+
+    def _update_screen(self):
+        """更新屏幕上的图像，并且切换到新的屏幕"""
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
 
 
 if __name__ == '__main__':
