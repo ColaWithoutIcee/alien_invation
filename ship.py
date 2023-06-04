@@ -33,10 +33,9 @@ class Ship:
     def update(self):
         """函数：用来更新飞船移动的位置"""
         # 这里用来直接更新飞船属性x的值，而不是更新ship.rect的x的值
-        if self.moving_right:
-            # self.rect.x +=
+        if self.moving_right and self.rect.right < self.screen_rect.right:
             self.x += self.settings.ship_speed
-        if self.moving_left:
+        if self.moving_left and self.rect.left > 0:
             self.x -= self.settings.ship_speed
 
         self.rect.x = self.x
