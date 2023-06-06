@@ -26,6 +26,8 @@ class Ship:
         # 对于每艘新的飞船，都将这个飞船放在屏幕的中央
         self.rect.midbottom = self.screen_rect.midbottom
         self.x = float(self.rect.x)
+        # self.x = self.rect.x
+
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
@@ -38,7 +40,7 @@ class Ship:
         if self.moving_left and self.rect.left > 0:
             self.x -= self.settings.ship_speed
 
-        self.rect.x = self.x
+        self.rect.x = self.x  # type: ignore
 
 
 if __name__ == '__main__':
