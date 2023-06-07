@@ -6,7 +6,9 @@
 # @Software: PyCharm
 import sys
 import pygame
+from time import sleep
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -34,17 +36,40 @@ class AlienInvasion:
         # 设置背景色
         # self.bg_color = (230, 230, 230)
 
+        # 创建一个用于存储游戏统计信息的示例
+        self.stats = GameStats(self)
+
     def run_game(self):
         """开始游戏的主循环"""
         while True:
             # 监视鼠标和键盘事件
             self._check_event()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
-            self._update_screen()
-            # 让最近绘制的屏幕可见
-            
+            if self.stats.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
+                self._update_screen()
+                # 让最近绘制的屏幕可见
+    
+    def _ship_hit(self):
+        """响应外星人被飞船撞到"""
+
+        if self.stats.ships_left > 0:
+            # 将ship_left 减1
+            self.stats.ships_left -= 1
+
+            # 清空余下的外星人和子弹
+            self.aliens.empty()
+            self.bullets.empty()
+
+            # 创建一群新的外星人，并将飞船重新放到屏幕底部的中央位置
+            self._create_fleet()
+            self.ship.center_ship()
+
+            # 暂停
+            sleep(0.5)
+        else:
+            self.stats.game_active = False
 
 
     def _check_event(self):
@@ -139,6 +164,13 @@ class AlienInvasion:
         self._check_fleet_edges()
         self.aliens.update()
 
+        # 检测外星人和飞船之间的碰撞
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+
+        # 检查是否有外星人到达了屏幕的底端
+        self._check_aliens_bottom()
+
     def _change_fleet_direction(self):
         """将整群外星人下移，并改变他们的方向"""
         for alien in self.aliens.sprites():
@@ -164,6 +196,14 @@ class AlienInvasion:
             # 删除现有的子弹并且新建一群外星人
             self.bullets.empty()
             self._create_fleet()
+
+    def _check_aliens_bottom(self):
+        """检查是否有外星人到达了屏幕底端。"""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                self._ship_hit()
+                break
 
 if __name__ == '__main__':
     # 创建游戏示例并开始游戏
