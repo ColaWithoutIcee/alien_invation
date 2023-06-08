@@ -9,6 +9,7 @@ import pygame
 from time import sleep
 from settings import Settings
 from game_stats import GameStats
+from button import Button
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -32,10 +33,9 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group()
 
         self._create_fleet()
+        # 创建play按钮
+        self.paly_button = Button(self, 'Play')
         pygame.display.set_caption("Alien Invasion")
-        # 设置背景色
-        # self.bg_color = (230, 230, 230)
-
         # 创建一个用于存储游戏统计信息的示例
         self.stats = GameStats(self)
 
@@ -44,6 +44,7 @@ class AlienInvasion:
         while True:
             # 监视鼠标和键盘事件
             self._check_event()
+            self._update_screen()
             if self.stats.game_active:
                 self.ship.update()
                 self._update_bullets()
@@ -81,6 +82,9 @@ class AlienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_event(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_paly_button(mouse_pos)
 
     def _update_screen(self):
         """更新屏幕上的图像，并且切换到新的屏幕"""
@@ -89,6 +93,9 @@ class AlienInvasion:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+        # 如果游戏处于非活动状态，就绘制Play按钮
+        if not self.stats.game_active:
+            self.paly_button.draw_button()
         pygame.display.flip()
 
     def _check_keydown_events(self, event):
@@ -108,7 +115,12 @@ class AlienInvasion:
             self.ship.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
-    
+
+    def _check_paly_button(self, mouse_pos):
+        """在玩家单击paly时开始游戏"""
+        if self.paly_button.rect.collidepoint(mouse_pos):
+            self.stats.game_active = True
+
     def _fire_bullet(self):
         """创建一颗子弹，并将其加入到编组bullet中"""
         if len(self.bullets) < self.settings.bullet_allowed: 
